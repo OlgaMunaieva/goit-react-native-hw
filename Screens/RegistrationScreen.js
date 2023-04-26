@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -10,6 +12,7 @@ import {
 } from "react-native";
 
 const RegistrationScreen = () => {
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   return (
     <ImageBackground
       source={require("../assets/images/bg.jpg")}
@@ -17,17 +20,35 @@ const RegistrationScreen = () => {
       style={styles.image}
     >
       <View style={styles.form}>
-        <Text style={styles.text}>Регистрация</Text>
-        <TextInput style={styles.input} placeholder="Логин" />
-        <TextInput style={styles.input} placeholder="Адрес электронной почты" />
-        <TextInput
-          style={styles.input}
-          placeholder="Пароль"
-          secureTextEntry={true}
-        />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <Text style={styles.text}>Регистрация</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Логин"
+            onFocus={() => setIsShowKeyboard(true)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Адрес электронной почты"
+            onFocus={() => setIsShowKeyboard(true)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Пароль"
+            secureTextEntry={true}
+            onFocus={() => setIsShowKeyboard(true)}
+          />
+        </KeyboardAvoidingView>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+        <View
+          style={{
+            ...styles.buttonContainer,
+            marginBottom: isShowKeyboard ? -60 : 0,
+          }}
+        >
+          <TouchableOpacity style={styles.button} activeOpacity={0.7}>
             <Text style={styles.btnTitle}>Зарегистрироваться</Text>
           </TouchableOpacity>
         </View>
@@ -39,8 +60,14 @@ const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   image: {
     flex: 1,
-    justifyContent: "flex-end",
-    // alignItems: "center",
+    ...Platform.select({
+      ios: {
+        justifyContent: "center",
+      },
+      android: {
+        justifyContent: "flex-end",
+      },
+    }),
   },
   form: {
     backgroundColor: "#FFFFFF",
@@ -65,6 +92,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginHorizontal: 16,
+    marginBottom: -60,
     // height: 51,
     // borderRadius: 100,
   },
