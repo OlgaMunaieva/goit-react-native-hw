@@ -33,6 +33,9 @@ const RegistrationScreen = ({ dimensions }) => {
     setUser(initialUser);
   };
 
+  const leftPhoto = dimensions / 2 - 60;
+  console.log(leftPhoto);
+
   return (
     <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
       <ImageBackground
@@ -42,12 +45,14 @@ const RegistrationScreen = ({ dimensions }) => {
       >
         <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
           <View style={styles.form}>
+            <View style={{ ...styles.photoBox, left: leftPhoto }}></View>
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
               <Text style={styles.textTitleForm}>Регистрация</Text>
               <TextInput
                 style={styles.input}
+                autoComplete={"username" ?? "name"}
                 placeholder="Логин"
                 placeholderTextColor="#bdbdbd"
                 value={user.login}
@@ -55,10 +60,11 @@ const RegistrationScreen = ({ dimensions }) => {
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, login: value }))
                 }
-                onEndEditing={() => hideKeyboard()}
+                // onEndEditing={() => hideKeyboard()}
               />
               <TextInput
                 style={styles.input}
+                autoComplete="email"
                 placeholder="Адрес электронной почты"
                 placeholderTextColor="#bdbdbd"
                 value={user.email}
@@ -66,10 +72,11 @@ const RegistrationScreen = ({ dimensions }) => {
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, email: value }))
                 }
-                onEndEditing={() => hideKeyboard()}
+                // onEndEditing={() => hideKeyboard()}
               />
               <TextInput
                 style={styles.input}
+                autoComplete="password"
                 placeholder="Пароль"
                 placeholderTextColor="#bdbdbd"
                 secureTextEntry={true}
@@ -78,7 +85,7 @@ const RegistrationScreen = ({ dimensions }) => {
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, password: value }))
                 }
-                onEndEditing={() => hideKeyboard()}
+                // onEndEditing={() => hideKeyboard()}
               />
             </KeyboardAvoidingView>
             <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
@@ -123,6 +130,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+  },
+  photoBox: {
+    position: "absolute",
+    top: -60,
+    // left: "{dimensions}",
+    width: 120,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
   },
   textTitleForm: {
     fontFamily: "Roboto-Medium",
