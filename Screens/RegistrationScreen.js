@@ -17,14 +17,15 @@ const initialUser = {
   password: "",
 };
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({ dimensions }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [user, setUser] = useState(initialUser);
+
+  console.log("prop", dimensions);
 
   const hideKeyboard = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
-    // console.log(user);
   };
 
   const submitForm = () => {
@@ -44,49 +45,56 @@ const RegistrationScreen = () => {
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-              <Text style={styles.text}>Регистрация</Text>
+              <Text style={styles.textTitleForm}>Регистрация</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Логин"
+                placeholderTextColor="#bdbdbd"
                 value={user.login}
                 onFocus={() => setIsShowKeyboard(true)}
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, login: value }))
                 }
+                onEndEditing={() => hideKeyboard()}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Адрес электронной почты"
+                placeholderTextColor="#bdbdbd"
                 value={user.email}
                 onFocus={() => setIsShowKeyboard(true)}
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, email: value }))
                 }
+                onEndEditing={() => hideKeyboard()}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Пароль"
+                placeholderTextColor="#bdbdbd"
                 secureTextEntry={true}
                 value={user.password}
                 onFocus={() => setIsShowKeyboard(true)}
                 onChangeText={(value) =>
                   setUser((prevState) => ({ ...prevState, password: value }))
                 }
+                onEndEditing={() => hideKeyboard()}
               />
             </KeyboardAvoidingView>
-
-            <View
-              style={{
-                ...styles.buttonContainer,
-                marginBottom: isShowKeyboard ? -60 : 0,
-              }}
-            >
+            <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
               <TouchableOpacity
-                style={styles.button}
+                style={styles.buttonReg}
                 activeOpacity={0.7}
                 onPress={() => submitForm()}
               >
-                <Text style={styles.btnTitle}>Зарегистрироваться</Text>
+                <Text style={styles.btnTitleReg}>Зарегистрироваться </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonEnt}
+                activeOpacity={0.7}
+                onPress={() => submitForm()}
+              >
+                <Text style={styles.btnTitleEnt}>Уже есть аккаунт? Войти</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -109,17 +117,21 @@ const styles = StyleSheet.create({
     }),
   },
   form: {
+    position: "relative",
     paddingTop: 92,
+    paddingBottom: 78,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  text: {
+  textTitleForm: {
+    fontFamily: "Roboto-Medium",
     fontSize: 30,
     marginBottom: 33,
     textAlign: "center",
   },
   input: {
+    fontFamily: "Roboto-Regular",
     marginHorizontal: 16,
     marginBottom: 16,
     paddingLeft: 16,
@@ -133,20 +145,37 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginHorizontal: 16,
     // marginBottom: -60,
-    // height: 51,
-    // borderRadius: 100,
   },
-  button: {
+  buttonReg: {
+    marginHorizontal: 16,
     backgroundColor: "#FF6C00",
     height: 51,
     marginTop: 27,
-    // fontSize: 16,
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
   },
-  btnTitle: {
+  btnTitleReg: {
+    fontFamily: "Roboto-Regular",
+    fontWeight: 400,
+    fontSize: 16,
     color: "#FFFFFF",
+    fontSize: 16,
+  },
+  buttonEnt: {
+    marginHorizontal: 16,
+    // backgroundColor: "#FF6C00",
+    height: 51,
+    // marginBottom: 78,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btnTitleEnt: {
+    fontFamily: "Roboto-Regular",
+    fontWeight: 400,
+    fontSize: 16,
+    color: "#1B4371",
     fontSize: 16,
   },
 });
