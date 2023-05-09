@@ -69,8 +69,6 @@ const LoginScreen = ({ register }) => {
   };
 
   const hideKeyboardCompletedForm = () => {
-    console.log(user.email & user.password);
-    console.log(user.email);
     if ((user.email !== "") & (user.password !== "")) {
       setIsShowKeyboard(false);
       Keyboard.dismiss();
