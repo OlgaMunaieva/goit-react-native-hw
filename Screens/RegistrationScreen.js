@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Image, Keyboard, TouchableWithoutFeedback } from "react-native";
 import {
   ImageBackground,
@@ -19,6 +19,8 @@ const initialUser = {
 };
 
 const RegistrationScreen = ({ dimensions, enter }) => {
+  const inputs = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [user, setUser] = useState(initialUser);
   const [isShowPhoto, setIsShowPhoto] = useState(false);
@@ -26,6 +28,26 @@ const RegistrationScreen = ({ dimensions, enter }) => {
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPass, setIsFocusedPass] = useState(false);
   const [showPass, setShowPass] = useState(false);
+
+  const handleNextInput = () => {
+    const nextIndex = activeIndex + 1;
+    if (nextIndex > inputs.current.length) {
+      return;
+    } else {
+      if (inputs.current[nextIndex]) {
+        inputs.current[nextIndex].focus();
+        setActiveIndex(nextIndex);
+        setIsShowKeyboard(true);
+      } else {
+        setActiveIndex(0);
+        setIsShowKeyboard(true);
+      }
+    }
+  };
+
+  const handleTextInputRef = (input, index) => {
+    inputs.current[index] = input;
+  };
 
   const handleFocusLogin = () => {
     setIsShowKeyboard(true);
@@ -64,14 +86,14 @@ const RegistrationScreen = ({ dimensions, enter }) => {
     setUser(initialUser);
   };
 
-  // const hideKeyboardCompletedForm = () => {
-  //   console.log(user.login & user.email & user.password);
-  //   console.log(user.email);
-  //   if ((user.login !== "") & (user.email !== "") & (user.password !== "")) {
-  //     setIsShowKeyboard(false);
-  //     Keyboard.dismiss();
-  //   }
-  // };
+  const hideKeyboardCompletedForm = () => {
+    console.log(user.login & user.email & user.password);
+    console.log(user.email);
+    if ((user.login !== "") & (user.email !== "") & (user.password !== "")) {
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
@@ -127,7 +149,10 @@ const RegistrationScreen = ({ dimensions, enter }) => {
                 }
                 onFocus={handleFocusLogin}
                 onBlur={handleBlurLogin}
-                // onEndEditing={() => hideKeyboardCompletedForm()}
+                onEndEditing={() => hideKeyboardCompletedForm()}
+                ref={(input) => handleTextInputRef(input, 0)}
+                onSubmitEditing={handleNextInput}
+                returnKeyType="next"
               />
               <TextInput
                 style={[
@@ -143,7 +168,10 @@ const RegistrationScreen = ({ dimensions, enter }) => {
                 }
                 onFocus={handleFocusEmail}
                 onBlur={handleBlurEmail}
-                // onEndEditing={() => hideKeyboardCompletedForm()}
+                onEndEditing={() => hideKeyboardCompletedForm()}
+                ref={(input) => handleTextInputRef(input, 1)}
+                onSubmitEditing={handleNextInput}
+                returnKeyType="next"
               />
               <View style={styles.passwordBox}>
                 <TextInput
@@ -161,11 +189,17 @@ const RegistrationScreen = ({ dimensions, enter }) => {
                   }
                   onFocus={handleFocusPass}
                   onBlur={handleBlurPass}
-                  // onEndEditing={() => hideKeyboardCompletedForm()}
+                  onEndEditing={() => hideKeyboardCompletedForm()}
+                  ref={(input) =>
+                    handleTextInputRef(input, inputs.current.length)
+                  }
+                  onSubmitEditing={handleNextInput}
+                  returnKeyType="done"
                 />
                 <TouchableOpacity
                   style={styles.passwordBtn}
-                  onPress={() => setShowPass(true)}
+                  onPressIn={() => setShowPass(true)}
+                  onPressOut={() => setShowPass(false)}
                 >
                   <Text style={styles.btnTitleEnt}>Показать</Text>
                 </TouchableOpacity>

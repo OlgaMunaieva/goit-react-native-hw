@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import {
   ImageBackground,
@@ -18,11 +18,33 @@ const initialUser = {
 };
 
 const LoginScreen = ({ register }) => {
+  const inputs = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [user, setUser] = useState(initialUser);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPass, setIsFocusedPass] = useState(false);
   const [showPass, setShowPass] = useState(false);
+
+  const handleNextInput = () => {
+    const nextIndex = activeIndex + 1;
+    if (nextIndex > inputs.current.length) {
+      return;
+    } else {
+      if (inputs.current[nextIndex]) {
+        inputs.current[nextIndex].focus();
+        setActiveIndex(nextIndex);
+        setIsShowKeyboard(true);
+      } else {
+        setActiveIndex(0);
+        setIsShowKeyboard(true);
+      }
+    }
+  };
+
+  const handleTextInputRef = (input, index) => {
+    inputs.current[index] = input;
+  };
 
   const handleFocusEmail = () => {
     setIsShowKeyboard(true);
@@ -52,14 +74,14 @@ const LoginScreen = ({ register }) => {
     setUser(initialUser);
   };
 
-  // const hideKeyboardCompletedForm = () => {
-  //   console.log(user.login & user.email & user.password);
-  //   console.log(user.email);
-  //   if ((user.login !== "") & (user.email !== "") & (user.password !== "")) {
-  //     setIsShowKeyboard(false);
-  //     Keyboard.dismiss();
-  //   }
-  // };
+  const hideKeyboardCompletedForm = () => {
+    console.log(user.email & user.password);
+    console.log(user.email);
+    if ((user.email !== "") & (user.password !== "")) {
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
@@ -88,7 +110,10 @@ const LoginScreen = ({ register }) => {
                 }
                 onFocus={handleFocusEmail}
                 onBlur={handleBlurEmail}
-                // onEndEditing={() => hideKeyboardCompletedForm()}
+                onEndEditing={() => hideKeyboardCompletedForm()}
+                ref={(input) => handleTextInputRef(input, 0)}
+                onSubmitEditing={handleNextInput}
+                returnKeyType="next"
               />
               <View style={styles.passwordBox}>
                 <TextInput
@@ -106,11 +131,17 @@ const LoginScreen = ({ register }) => {
                   }
                   onFocus={handleFocusPass}
                   onBlur={handleBlurPass}
-                  // onEndEditing={() => hideKeyboardCompletedForm()}
+                  onEndEditing={() => hideKeyboardCompletedForm()}
+                  ref={(input) =>
+                    handleTextInputRef(input, inputs.current.length)
+                  }
+                  onSubmitEditing={handleNextInput}
+                  returnKeyType="done"
                 />
                 <TouchableOpacity
                   style={styles.passwordBtn}
-                  onPress={() => setShowPass(true)}
+                  onPressIn={() => setShowPass(true)}
+                  onPressOut={() => setShowPass(false)}
                 >
                   <Text style={styles.btnTitleEnt}>Показать</Text>
                 </TouchableOpacity>
