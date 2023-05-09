@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Dimensions, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  ImageBackground,
+  ImageBackgroundBase,
+  Keyboard,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -44,19 +54,40 @@ export default function App() {
   const handleRegisterBtn = () => {
     setLoginScreen(false);
   };
+
   // console.log(Platform.OS);
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      {loginScreen ? (
-        <LoginScreen register={handleRegisterBtn} />
-      ) : (
-        <RegistrationScreen dimensions={dimensions} enter={handleEnterBtn} />
-      )}
-    </View>
+    <TouchableWithoutFeedback
+      onPress={() => Keyboard.dismiss()}
+      onLayout={onLayoutRootView}
+    >
+      <ImageBackground
+        source={require("./assets/images/bg.jpg")}
+        resizeMode="cover"
+        style={styles.image}
+      >
+        {loginScreen ? (
+          <LoginScreen register={handleRegisterBtn} />
+        ) : (
+          <RegistrationScreen dimensions={dimensions} enter={handleEnterBtn} />
+        )}
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    ...Platform.select({
+      ios: {
+        justifyContent: "center",
+      },
+      android: {
+        justifyContent: "flex-end",
+      },
+    }),
+  },
   container: {
     flex: 1,
   },

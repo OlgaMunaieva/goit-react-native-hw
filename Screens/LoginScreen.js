@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import {
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -12,7 +11,6 @@ import {
 } from "react-native";
 
 const initialUser = {
-  login: "",
   email: "",
   password: "",
 };
@@ -25,6 +23,25 @@ const LoginScreen = ({ register }) => {
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPass, setIsFocusedPass] = useState(false);
   const [showPass, setShowPass] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setIsShowKeyboard(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setIsShowKeyboard(false);
+      }
+    );
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleNextInput = () => {
     const nextIndex = activeIndex + 1;
@@ -46,29 +63,6 @@ const LoginScreen = ({ register }) => {
     inputs.current[index] = input;
   };
 
-  const handleFocusEmail = () => {
-    setIsShowKeyboard(true);
-    setIsFocusedEmail(true);
-  };
-  const handleBlurEmail = () => {
-    // setIsShowKeyboard(false);
-    setIsFocusedEmail(false);
-  };
-
-  const handleFocusPass = () => {
-    setIsShowKeyboard(true);
-    setIsFocusedPass(true);
-  };
-  const handleBlurPass = () => {
-    // setIsShowKeyboard(false);
-    setIsFocusedPass(false);
-  };
-
-  const hideKeyboard = () => {
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-  };
-
   const submitForm = () => {
     console.log(user);
     setUser(initialUser);
@@ -84,106 +78,79 @@ const LoginScreen = ({ register }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
-      <ImageBackground
-        source={require("../assets/images/bg.jpg")}
-        resizeMode="cover"
-        style={styles.image}
-      >
-        <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
-          <View style={styles.form}>
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.form}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <Text style={styles.textTitleForm}>Войти</Text>
+          <TextInput
+            style={[styles.input, isFocusedEmail ? styles.inputFocused : null]}
+            autoComplete="email"
+            placeholder="Адрес электронной почты"
+            placeholderTextColor="#bdbdbd"
+            value={user.email}
+            onChangeText={(value) =>
+              setUser((prevState) => ({ ...prevState, email: value }))
+            }
+            onFocus={() => setIsFocusedEmail(true)}
+            onBlur={() => setIsFocusedEmail(false)}
+            onEndEditing={() => hideKeyboardCompletedForm()}
+            ref={(input) => handleTextInputRef(input, 0)}
+            onSubmitEditing={handleNextInput}
+            returnKeyType="next"
+          />
+          <View style={styles.passwordBox}>
+            <TextInput
+              style={[styles.input, isFocusedPass ? styles.inputFocused : null]}
+              autoComplete="password"
+              placeholder="Пароль"
+              placeholderTextColor="#bdbdbd"
+              secureTextEntry={showPass ? false : true}
+              value={user.password}
+              onChangeText={(value) =>
+                setUser((prevState) => ({ ...prevState, password: value }))
+              }
+              onFocus={() => setIsFocusedPass(true)}
+              onBlur={() => setIsFocusedPass(false)}
+              onEndEditing={() => hideKeyboardCompletedForm()}
+              ref={(input) => handleTextInputRef(input, inputs.current.length)}
+              onSubmitEditing={handleNextInput}
+              returnKeyType="done"
+            />
+            <TouchableOpacity
+              style={styles.passwordBtn}
+              onPressIn={() => setShowPass(true)}
+              onPressOut={() => setShowPass(false)}
             >
-              <Text style={styles.textTitleForm}>Войти</Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  isFocusedEmail ? styles.inputFocused : null,
-                ]}
-                autoComplete="email"
-                placeholder="Адрес электронной почты"
-                placeholderTextColor="#bdbdbd"
-                value={user.email}
-                onChangeText={(value) =>
-                  setUser((prevState) => ({ ...prevState, email: value }))
-                }
-                onFocus={handleFocusEmail}
-                onBlur={handleBlurEmail}
-                onEndEditing={() => hideKeyboardCompletedForm()}
-                ref={(input) => handleTextInputRef(input, 0)}
-                onSubmitEditing={handleNextInput}
-                returnKeyType="next"
-              />
-              <View style={styles.passwordBox}>
-                <TextInput
-                  style={[
-                    styles.input,
-                    isFocusedPass ? styles.inputFocused : null,
-                  ]}
-                  autoComplete="password"
-                  placeholder="Пароль"
-                  placeholderTextColor="#bdbdbd"
-                  secureTextEntry={showPass ? false : true}
-                  value={user.password}
-                  onChangeText={(value) =>
-                    setUser((prevState) => ({ ...prevState, password: value }))
-                  }
-                  onFocus={handleFocusPass}
-                  onBlur={handleBlurPass}
-                  onEndEditing={() => hideKeyboardCompletedForm()}
-                  ref={(input) =>
-                    handleTextInputRef(input, inputs.current.length)
-                  }
-                  onSubmitEditing={handleNextInput}
-                  returnKeyType="done"
-                />
-                <TouchableOpacity
-                  style={styles.passwordBtn}
-                  onPressIn={() => setShowPass(true)}
-                  onPressOut={() => setShowPass(false)}
-                >
-                  <Text style={styles.btnTitleEnt}>Показать</Text>
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
-            <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
-              <TouchableOpacity
-                style={styles.buttonReg}
-                activeOpacity={0.7}
-                onPress={() => submitForm()}
-              >
-                <Text style={styles.btnTitleReg}>Войти</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.buttonEnt}
-                activeOpacity={0.7}
-                onPress={() => register()}
-              >
-                <Text style={styles.btnTitleEnt}>
-                  Нет аккаунта? Зарегистрироваться
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={styles.btnTitleEnt}>Показать</Text>
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
+        </KeyboardAvoidingView>
+        <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
+          <TouchableOpacity
+            style={styles.buttonReg}
+            activeOpacity={0.7}
+            onPress={() => submitForm()}
+          >
+            <Text style={styles.btnTitleReg}>Войти</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonEnt}
+            activeOpacity={0.7}
+            onPress={() => register()}
+          >
+            <Text style={styles.btnTitleEnt}>
+              Нет аккаунта? Зарегистрироваться
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    ...Platform.select({
-      ios: {
-        justifyContent: "center",
-      },
-      android: {
-        justifyContent: "flex-end",
-      },
-    }),
-  },
   form: {
     position: "relative",
     paddingTop: 32,

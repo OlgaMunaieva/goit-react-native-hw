@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Image, Keyboard, TouchableWithoutFeedback } from "react-native";
 import {
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -29,6 +28,25 @@ const RegistrationScreen = ({ dimensions, enter }) => {
   const [isFocusedPass, setIsFocusedPass] = useState(false);
   const [showPass, setShowPass] = useState(false);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setIsShowKeyboard(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setIsShowKeyboard(false);
+      }
+    );
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   const handleNextInput = () => {
     const nextIndex = activeIndex + 1;
     if (nextIndex > inputs.current.length) {
@@ -49,46 +67,12 @@ const RegistrationScreen = ({ dimensions, enter }) => {
     inputs.current[index] = input;
   };
 
-  const handleFocusLogin = () => {
-    setIsShowKeyboard(true);
-    setIsFocusedLogin(true);
-  };
-  const handleBlurLogin = () => {
-    // setIsShowKeyboard(false);
-    setIsFocusedLogin(false);
-  };
-
-  const handleFocusEmail = () => {
-    setIsShowKeyboard(true);
-    setIsFocusedEmail(true);
-  };
-  const handleBlurEmail = () => {
-    // setIsShowKeyboard(false);
-    setIsFocusedEmail(false);
-  };
-
-  const handleFocusPass = () => {
-    setIsShowKeyboard(true);
-    setIsFocusedPass(true);
-  };
-  const handleBlurPass = () => {
-    // setIsShowKeyboard(false);
-    setIsFocusedPass(false);
-  };
-
-  const hideKeyboard = () => {
-    setIsShowKeyboard(false);
-    Keyboard.dismiss();
-  };
-
   const submitForm = () => {
     console.log(user);
     setUser(initialUser);
   };
 
   const hideKeyboardCompletedForm = () => {
-    console.log(user.login & user.email & user.password);
-    console.log(user.email);
     if ((user.login !== "") & (user.email !== "") & (user.password !== "")) {
       setIsShowKeyboard(false);
       Keyboard.dismiss();
@@ -96,150 +80,120 @@ const RegistrationScreen = ({ dimensions, enter }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
-      <ImageBackground
-        source={require("../assets/images/bg.jpg")}
-        resizeMode="cover"
-        style={styles.image}
-      >
-        <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
-          <View style={styles.form}>
-            {isShowPhoto ? (
-              <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
-                <Image
-                  style={styles.photo}
-                  source={require("../assets/images/photo-test.jpg")}
-                />
-                <TouchableOpacity
-                  style={styles.photoIcon}
-                  onPress={() => setIsShowPhoto(false)}
-                >
-                  <Fontisto name="close" size={25} color="#e8e8e8" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
-                <TouchableOpacity
-                  style={styles.photoIcon}
-                  onPress={() => setIsShowPhoto(true)}
-                >
-                  <MaterialIcons
-                    name="add-circle-outline"
-                    size={25}
-                    color="#ff6c00"
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.form}>
+        {isShowPhoto ? (
+          <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
+            <Image
+              style={styles.photo}
+              source={require("../assets/images/photo-test.jpg")}
+            />
+            <TouchableOpacity
+              style={styles.photoIcon}
+              onPress={() => setIsShowPhoto(false)}
             >
-              <Text style={styles.textTitleForm}>Регистрация</Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  isFocusedLogin ? styles.inputFocused : null,
-                ]}
-                autoComplete={"username" ?? "name"}
-                placeholder="Логин"
-                placeholderTextColor="#bdbdbd"
-                value={user.login}
-                onChangeText={(value) =>
-                  setUser((prevState) => ({ ...prevState, login: value }))
-                }
-                onFocus={handleFocusLogin}
-                onBlur={handleBlurLogin}
-                onEndEditing={() => hideKeyboardCompletedForm()}
-                ref={(input) => handleTextInputRef(input, 0)}
-                onSubmitEditing={handleNextInput}
-                returnKeyType="next"
-              />
-              <TextInput
-                style={[
-                  styles.input,
-                  isFocusedEmail ? styles.inputFocused : null,
-                ]}
-                autoComplete="email"
-                placeholder="Адрес электронной почты"
-                placeholderTextColor="#bdbdbd"
-                value={user.email}
-                onChangeText={(value) =>
-                  setUser((prevState) => ({ ...prevState, email: value }))
-                }
-                onFocus={handleFocusEmail}
-                onBlur={handleBlurEmail}
-                onEndEditing={() => hideKeyboardCompletedForm()}
-                ref={(input) => handleTextInputRef(input, 1)}
-                onSubmitEditing={handleNextInput}
-                returnKeyType="next"
-              />
-              <View style={styles.passwordBox}>
-                <TextInput
-                  style={[
-                    styles.input,
-                    isFocusedPass ? styles.inputFocused : null,
-                  ]}
-                  autoComplete="password"
-                  placeholder="Пароль"
-                  placeholderTextColor="#bdbdbd"
-                  secureTextEntry={showPass ? false : true}
-                  value={user.password}
-                  onChangeText={(value) =>
-                    setUser((prevState) => ({ ...prevState, password: value }))
-                  }
-                  onFocus={handleFocusPass}
-                  onBlur={handleBlurPass}
-                  onEndEditing={() => hideKeyboardCompletedForm()}
-                  ref={(input) =>
-                    handleTextInputRef(input, inputs.current.length)
-                  }
-                  onSubmitEditing={handleNextInput}
-                  returnKeyType="done"
-                />
-                <TouchableOpacity
-                  style={styles.passwordBtn}
-                  onPressIn={() => setShowPass(true)}
-                  onPressOut={() => setShowPass(false)}
-                >
-                  <Text style={styles.btnTitleEnt}>Показать</Text>
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
-            <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
-              <TouchableOpacity
-                style={styles.buttonReg}
-                activeOpacity={0.7}
-                onPress={() => submitForm()}
-              >
-                <Text style={styles.btnTitleReg}>Зарегистрироваться </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.buttonEnt}
-                activeOpacity={0.7}
-                onPress={() => enter()}
-              >
-                <Text style={styles.btnTitleEnt}>Уже есть аккаунт? Войти</Text>
-              </TouchableOpacity>
-            </View>
+              <Fontisto name="close" size={25} color="#e8e8e8" />
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
+        ) : (
+          <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
+            <TouchableOpacity
+              style={styles.photoIcon}
+              onPress={() => setIsShowPhoto(true)}
+            >
+              <MaterialIcons
+                name="add-circle-outline"
+                size={25}
+                color="#ff6c00"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <Text style={styles.textTitleForm}>Регистрация</Text>
+          <TextInput
+            style={[styles.input, isFocusedLogin ? styles.inputFocused : null]}
+            autoComplete={"username" ?? "name"}
+            placeholder="Логин"
+            placeholderTextColor="#bdbdbd"
+            value={user.login}
+            onChangeText={(value) =>
+              setUser((prevState) => ({ ...prevState, login: value }))
+            }
+            onFocus={() => setIsFocusedLogin(true)}
+            onBlur={() => setIsFocusedLogin(false)}
+            onEndEditing={() => hideKeyboardCompletedForm()}
+            ref={(input) => handleTextInputRef(input, 0)}
+            onSubmitEditing={handleNextInput}
+            returnKeyType="next"
+          />
+          <TextInput
+            style={[styles.input, isFocusedEmail ? styles.inputFocused : null]}
+            autoComplete="email"
+            placeholder="Адрес электронной почты"
+            placeholderTextColor="#bdbdbd"
+            value={user.email}
+            onChangeText={(value) =>
+              setUser((prevState) => ({ ...prevState, email: value }))
+            }
+            onFocus={() => setIsFocusedEmail(true)}
+            onBlur={() => setIsFocusedEmail(false)}
+            onEndEditing={() => hideKeyboardCompletedForm()}
+            ref={(input) => handleTextInputRef(input, 1)}
+            onSubmitEditing={handleNextInput}
+            returnKeyType="next"
+          />
+          <View style={styles.passwordBox}>
+            <TextInput
+              style={[styles.input, isFocusedPass ? styles.inputFocused : null]}
+              autoComplete="password"
+              placeholder="Пароль"
+              placeholderTextColor="#bdbdbd"
+              secureTextEntry={showPass ? false : true}
+              value={user.password}
+              onChangeText={(value) =>
+                setUser((prevState) => ({ ...prevState, password: value }))
+              }
+              onFocus={() => setIsFocusedPass(true)}
+              onBlur={() => setIsFocusedPass(false)}
+              onEndEditing={() => hideKeyboardCompletedForm()}
+              ref={(input) => handleTextInputRef(input, inputs.current.length)}
+              onSubmitEditing={handleNextInput}
+              returnKeyType="done"
+            />
+            <TouchableOpacity
+              style={styles.passwordBtn}
+              onPressIn={() => setShowPass(true)}
+              onPressOut={() => setShowPass(false)}
+            >
+              <Text style={styles.btnTitleEnt}>Показать</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+        <View style={{ marginBottom: isShowKeyboard ? -180 : 0 }}>
+          <TouchableOpacity
+            style={styles.buttonReg}
+            activeOpacity={0.7}
+            onPress={() => submitForm()}
+          >
+            <Text style={styles.btnTitleReg}>Зарегистрироваться </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonEnt}
+            activeOpacity={0.7}
+            onPress={() => enter()}
+          >
+            <Text style={styles.btnTitleEnt}>Уже есть аккаунт? Войти</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    ...Platform.select({
-      ios: {
-        justifyContent: "center",
-      },
-      android: {
-        justifyContent: "flex-end",
-      },
-    }),
-  },
   form: {
     position: "relative",
     paddingTop: 92,
