@@ -12,10 +12,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import RegistrationScreen from "./Screens/RegistrationScreen";
+import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import LoginScreen from "./Screens/LoginScreen";
+import LoginScreen from "./Screens/Auth/LoginScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -65,40 +65,24 @@ export default function App() {
 
   // console.log(Platform.OS);
   return (
-    <TouchableWithoutFeedback
-      onPress={() => Keyboard.dismiss()}
-      onLayout={onLayoutRootView}
-    >
-      <ImageBackground
-        source={require("./assets/images/bg.jpg")}
-        resizeMode="cover"
-        style={styles.image}
-      >
-        <NavigationContainer>
-          {loginScreen ? (
-            <LoginScreen register={handleRegisterBtn} dimensions={dimensions} />
-          ) : (
-            <RegistrationScreen
-              dimensions={dimensions}
-              enter={handleEnterBtn}
-            />
-          )}
-        </NavigationContainer>
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+    <NavigationContainer onLayout={onLayoutRootView}>
+      <MainStack.Navigator>
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Register"
+          component={RegistrationScreen}
+          options={{ headerShown: false }}
+        />
+      </MainStack.Navigator>
+      {/* {loginScreen ? ( */}
+      {/* <LoginScreen /> */}
+      {/* ) : ( */}
+      {/* <RegistrationScreen /> */}
+      {/* {/* )} */}
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    ...Platform.select({
-      ios: {
-        justifyContent: "center",
-      },
-      android: {
-        justifyContent: "flex-end",
-      },
-    }),
-  },
-});

@@ -1,6 +1,17 @@
 import { StyleSheet } from "react-native";
 
 export const FormStyles = StyleSheet.create({
+  image: {
+    flex: 1,
+    ...Platform.select({
+      ios: {
+        justifyContent: "center",
+      },
+      android: {
+        justifyContent: "flex-end",
+      },
+    }),
+  },
   form: {
     position: "relative",
     paddingTop: 92,
