@@ -60,7 +60,7 @@ export const FormStyles = StyleSheet.create({
   },
   passwordBtn: {
     position: "absolute",
-    top: 16,
+    top: 12,
     right: 32,
   },
   buttonContainer: {

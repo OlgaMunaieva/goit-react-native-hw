@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import {
   Dimensions,
@@ -15,8 +16,12 @@ import RegistrationScreen from "./Screens/RegistrationScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import LoginScreen from "./Screens/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 SplashScreen.preventAutoHideAsync();
+
+const MainStack = createStackNavigator(); // вказує на групу навігаторів
 
 export default function App() {
   const [dimensions, setDimensions] = useState({
@@ -69,11 +74,16 @@ export default function App() {
         resizeMode="cover"
         style={styles.image}
       >
-        {loginScreen ? (
-          <LoginScreen register={handleRegisterBtn} dimensions={dimensions} />
-        ) : (
-          <RegistrationScreen dimensions={dimensions} enter={handleEnterBtn} />
-        )}
+        <NavigationContainer>
+          {loginScreen ? (
+            <LoginScreen register={handleRegisterBtn} dimensions={dimensions} />
+          ) : (
+            <RegistrationScreen
+              dimensions={dimensions}
+              enter={handleEnterBtn}
+            />
+          )}
+        </NavigationContainer>
       </ImageBackground>
     </TouchableWithoutFeedback>
   );
