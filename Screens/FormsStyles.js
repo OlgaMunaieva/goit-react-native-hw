@@ -9,6 +9,9 @@ export const FormStyles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
+  albumForm: {
+    paddingBottom: 12,
+  },
   enterForm: {
     paddingTop: 32,
   },

@@ -19,14 +19,17 @@ import LoginScreen from "./Screens/LoginScreen";
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [dimensions, setDimensions] = useState(Dimensions.get("window").width);
+  const [dimensions, setDimensions] = useState({
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+  });
   const [loginScreen, setLoginScreen] = useState(false);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
       "change",
-      ({ window: { width } }) => {
-        setDimensions(width);
+      ({ window: { width, height } }) => {
+        setDimensions({ width: width, height: height });
       }
     );
     return () => subscription?.remove();
@@ -67,7 +70,7 @@ export default function App() {
         style={styles.image}
       >
         {loginScreen ? (
-          <LoginScreen register={handleRegisterBtn} />
+          <LoginScreen register={handleRegisterBtn} dimensions={dimensions} />
         ) : (
           <RegistrationScreen dimensions={dimensions} enter={handleEnterBtn} />
         )}
@@ -87,8 +90,5 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
       },
     }),
-  },
-  container: {
-    flex: 1,
   },
 });

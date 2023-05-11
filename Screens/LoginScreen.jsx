@@ -15,7 +15,7 @@ const initialUser = {
   password: "",
 };
 
-const LoginScreen = ({ register }) => {
+const LoginScreen = ({ register, dimensions }) => {
   const inputs = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -77,7 +77,13 @@ const LoginScreen = ({ register }) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={[styles.form, styles.enterForm]}>
+      <View
+        style={[
+          styles.form,
+          styles.enterForm,
+          dimensions.height < 600 ? styles.albumForm : null,
+        ]}
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >

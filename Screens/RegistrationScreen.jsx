@@ -82,9 +82,11 @@ const RegistrationScreen = ({ dimensions, enter }) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.form}>
+      <View
+        style={[styles.form, dimensions.height < 500 ? styles.albumForm : null]}
+      >
         {isShowPhoto ? (
-          <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
+          <View style={{ ...styles.photoBox, left: dimensions.width / 2 - 60 }}>
             <Image
               style={styles.photo}
               source={require("../assets/images/photo-test.jpg")}
@@ -97,7 +99,7 @@ const RegistrationScreen = ({ dimensions, enter }) => {
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={{ ...styles.photoBox, left: dimensions / 2 - 60 }}>
+          <View style={{ ...styles.photoBox, left: dimensions.width / 2 - 60 }}>
             <TouchableOpacity
               style={styles.photoIcon}
               onPress={() => setIsShowPhoto(true)}
