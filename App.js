@@ -1,5 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
 import "react-native-gesture-handler";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
+import LoginScreen from "./Screens/Auth/LoginScreen";
+import Home from "./Screens/Home";
+import { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   Dimensions,
@@ -12,12 +17,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import LoginScreen from "./Screens/Auth/LoginScreen";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -66,8 +67,16 @@ export default function App() {
   // console.log(Platform.OS);
   return (
     <NavigationContainer onLayout={onLayoutRootView}>
-      <MainStack.Navigator>
+      <MainStack.Navigator initialRouteName="Login">
+        <MainStack.Screen name="Registration" component={RegistrationScreen} />
+        {/* Аналог Route */}
+        <MainStack.Screen name="Login" component={LoginScreen} />
         <MainStack.Screen
+          name="Home"
+          component={Home}
+          options={{ title: "Start screen" }}
+        />
+        {/* <MainStack.Screen
           name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
@@ -77,12 +86,13 @@ export default function App() {
           component={RegistrationScreen}
           options={{ headerShown: false }}
         />
+      </MainStack.Navigator> */}
+        {/* {loginScreen ? ( */}
+        {/* <LoginScreen /> */}
+        {/* ) : ( */}
+        {/* <RegistrationScreen /> */}
+        {/* {/* )} */}
       </MainStack.Navigator>
-      {/* {loginScreen ? ( */}
-      {/* <LoginScreen /> */}
-      {/* ) : ( */}
-      {/* <RegistrationScreen /> */}
-      {/* {/* )} */}
     </NavigationContainer>
   );
 }
